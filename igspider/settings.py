@@ -19,7 +19,7 @@ NEWSPIDER_MODULE = 'igspider.spiders'
 #USER_AGENT = 'igspider (+http://www.yourdomain.com)'
 
 # Obey robots.txt rules
-ROBOTSTXT_OBEY = True
+ROBOTSTXT_OBEY = False
 
 # Configure maximum concurrent requests performed by Scrapy (default: 16)
 #CONCURRENT_REQUESTS = 32
@@ -64,10 +64,10 @@ ROBOTSTXT_OBEY = True
 
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
-#ITEM_PIPELINES = {
-#    'igspider.pipelines.IgspiderPipeline': 300,
-#}
-
+ITEM_PIPELINES = {
+    'igspider.pipelines.IgspiderPipeline': 300,'igspider.pipelines.IGimagePipeline': 1
+}
+IMAGES_STORE = 'download_images'
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True

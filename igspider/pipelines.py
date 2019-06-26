@@ -9,3 +9,19 @@
 class IgspiderPipeline(object):
     def process_item(self, item, spider):
         return item
+
+import string
+import scrapy
+from scrapy.pipelines.images import ImagesPipeline
+from scrapy.exceptions import DropItem
+
+class IGimagePipeline(ImagesPipeline):  
+    def get_media_requests(self, item, info):
+        for image_url in item['image_urls']:
+            yield scrapy.Request(image_url, meta = {'item': item})
+
+    def item_completed(self, results, item, info):
+        image_paths = (x['path'] for ok, x in results if ok)
+        if not image_paths:
+            raise DropItem("Item contains no images")
+        return item
