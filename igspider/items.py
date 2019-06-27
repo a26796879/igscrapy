@@ -14,6 +14,9 @@ class IgspiderItem(scrapy.Item):
     pass
 class ImageItem(Item):
     href = scrapy.Field()
+    aftercode = scrapy.Field()
+    count = scrapy.Field()
+    userid = scrapy.Field()
 
 class IgImage(scrapy.Item):
     title = scrapy.Field()
