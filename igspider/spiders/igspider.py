@@ -7,7 +7,7 @@ from bs4 import BeautifulSoup
 
 class InstagramSpider(scrapy.Spider):
     name = 'igcrawler'
-    start_urls = ['https://www.instagram.com/oppsweiiiii']
+    start_urls = ['https://www.instagram.com/ilove7388']
     def parse(self, response):
         items = ImageItem()
         urldata = response.body
@@ -56,9 +56,11 @@ class InstagramSpider(scrapy.Spider):
                 href_url = items['href']
                 yield scrapy.Request(href_url, callback=self.parse_images, meta={'item': item})
         aftercode = rdata['data']['user']['edge_owner_to_timeline_media']['page_info']['end_cursor']
-        nexturl = 'https://www.instagram.com/graphql/query/?query_hash=f2405b236d85e8296cf30347c9f08c2a&variables=%7B%22id%22%3A%22' + userid + '%22%2C%22first%22%3A12%2C%22after%22%3A%22' + aftercode.replace('=', '') + '%3D%3D"%7D'
-        url = response.urljoin(nexturl)
-        yield scrapy.Request(url, self.parse2)
+   #只要還有抓到aftercode就持續載入下一頁
+        if aftercode  is not None:
+            nexturl = 'https://www.instagram.com/graphql/query/?query_hash=f2405b236d85e8296cf30347c9f08c2a&variables=%7B%22id%22%3A%22' + userid + '%22%2C%22first%22%3A12%2C%22after%22%3A%22' + aftercode.replace('=', '') + '%3D%3D"%7D'
+            url = response.urljoin(nexturl)
+            yield scrapy.Request(url, self.parse2)
 
     def parse_images(self, response):
         urldata = response.body
@@ -79,7 +81,14 @@ class InstagramSpider(scrapy.Spider):
             return item
 # 如果只有一張
         except:
-            url = data['entry_data']['PostPage'][0]['graphql']['shortcode_media']['display_url']
+            url = a['display_url']
             imgurls.append(url)
             item['image_urls'] = imgurls
             return item
+            '''
+            image無法處理video download的部分
+            if a['is_video'] is True:
+                url = a['video_url']
+透過↓取得該文章中是否有影片，有的話就透過['video_url']取得連結
+data['data']['user']['edge_owner_to_timeline_media']['edges']['is_video']
+            '''
