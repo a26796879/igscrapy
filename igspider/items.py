@@ -22,3 +22,7 @@ class IgImage(scrapy.Item):
     title = scrapy.Field()
     image_urls = scrapy.Field()
     images = scrapy.Field()
+    video_url = scrapy.Field()
+
+class IgVideo(scrapy.Item):
+    video_url = scrapy.Field()

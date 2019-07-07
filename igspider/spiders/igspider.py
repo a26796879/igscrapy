@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 
 import scrapy
-from ..items import ImageItem, IgImage
+from ..items import ImageItem, IgImage, IgVideo
 import json
 from bs4 import BeautifulSoup
 
 class InstagramSpider(scrapy.Spider):
     name = 'igcrawler'
-    start_urls = ['https://www.instagram.com/ilove7388']
+    start_urls = ['https://www.instagram.com/niceguy331']
     def parse(self, response):
         items = ImageItem()
         urldata = response.body
@@ -18,8 +18,6 @@ class InstagramSpider(scrapy.Spider):
         data = json.loads(json_part)
         a = data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['edges']
         aftercode = data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['page_info']['end_cursor']
-        # 總文章數
-        count = data['entry_data']['ProfilePage'][0]['graphql']['user']['edge_owner_to_timeline_media']['count']
         userid = data['entry_data']['ProfilePage'][0]['graphql']['user']['id']
         # 取出個別文章中的照片連結
         for i in range(len(a)):
@@ -71,6 +69,9 @@ class InstagramSpider(scrapy.Spider):
         json_part = json_part[json_part.find('=')+2:-1]
         data = json.loads(json_part)
         a = data['entry_data']['PostPage'][0]['graphql']['shortcode_media']
+
+        if a['is_video'] is True:
+            yield scrapy.Request(a['video_url'], callback=self.parse_video, meta={'item': item})
  # 取得每篇文章內的圖片
  # 如果有多張照片
         try:
@@ -85,10 +86,29 @@ class InstagramSpider(scrapy.Spider):
             imgurls.append(url)
             item['image_urls'] = imgurls
             return item
-            '''
-            image無法處理video download的部分
-            if a['is_video'] is True:
-                url = a['video_url']
+
+    def parse_video(self,response):
+        '''
+
+        imgurls = []
+        soup = BeautifulSoup(urldata, 'html.parser')
+        json_part = soup.find_all("script", type="text/javascript")[3].string
+        json_part = json_part[json_part.find('=')+2:-1]
+        data = json.loads(json_part)
+        a = data['entry_data']['PostPage'][0]['graphql']['shortcode_media']
+        '''
+        #urldata = response.body
+        #item = response.meta['item']
+        videourl = []
+        url = response.body
+        videourl.append(url)
+        item['video_url'] = videourl
+        return item
+
+'''
+image無法處理video download的部分
+if a['is_video'] is True:
+url = a['video_url']
 透過↓取得該文章中是否有影片，有的話就透過['video_url']取得連結
 data['data']['user']['edge_owner_to_timeline_media']['edges']['is_video']
-            '''
+'''

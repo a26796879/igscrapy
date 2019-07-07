@@ -65,9 +65,10 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 ITEM_PIPELINES = {
-    'igspider.pipelines.IgspiderPipeline': 300,'igspider.pipelines.IGimagePipeline': 1
+    'igspider.pipelines.IgspiderPipeline': 300,'igspider.pipelines.IGimagePipeline': 1,'igspider.pipelines.IgVideoPipeline': 1
 }
 IMAGES_STORE = 'download_images'
+FILES_STORE = 'download_images'
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
 #AUTOTHROTTLE_ENABLED = True
